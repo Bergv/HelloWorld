@@ -1,1 +1,23 @@
-file1
+MariaDB 安装
+
+mysqld.exe --install mariadb (mariadb 为服务名，可以自定义)
+
+启动服务：net start mariadb ，对应的关闭服务： net stop mariadb
+
+由于之前没有配置密码，执行mysql -uroot， 空密码登陆，
+
+登陆后切换数据库：use mysql ， 这个时候可以设置自己的密码了,
+
+执行命令：update user set password=password("123456") where user="root";
+
+show variables like 'character%'
+
+
+https://www.cnblogs.com/jiangxiaobo/p/6110647.html
+
+
+
+
+
+
+
