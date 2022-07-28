@@ -1,0 +1,6 @@
+为解决国内访问NuGet服务器速度不稳定的问题 ，这里推荐使用NuGet微软官方中国国内镜像
+地址：
+https://nuget.cdn.azure.cn/v3/index.json
+https://nuget.cnblogs.com/v3/index.json
+
+
