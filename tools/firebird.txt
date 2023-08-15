@@ -1,0 +1,89 @@
+
+手工安装
+install_service.bat
+
+
+参考 ./doc/README.security_database.txt
+
+安全数据库（security4.fdb）没有预定义的用户，Firebird从3.0版本开始不需要SYSDBA用户
+
+1. Stop the Firebird server
+先要停止服务
+
+2. 进入嵌入式模式，不需要密码
+isql -user sysdba employee
+
+3. 创建用户SYSDBA并为其设置密码
+SQL> create user SYSDBA password 'StrongPassword';
+SQL> exit;
+
+4. start the Firebird server again
+重启服务
+------
+gsec 逐渐弃用，当前仍然可用
+---------------------------------------------------------------------------
+在Firebird 3中，用户管理完全通过SQL命令完成：
+
+isql
+
+connect localhost:employee user sysdba password masterkey;
+
+修改密码
+alter user sysdba set password 'Zis4_viZuna83YoYo';
+
+
+
+---------------------------------------------------------------------------
+show table;
+
+SYSDBA：
+create user SYSDBA password 'root';
+
+create user dubya password 'Xwha007_noma';
+
+
+
+alter current user set password 'SomethingEvenMoreSecretThanThis';
+alter user dubya set inactive;
+drop user ted;
+
+--------
+SYSDBA GRANT ADMIN ROLE
+create user bigbill password 'bigsekrit7foryou' grant admin role;
+create user root password 'root' grant admin role;
+alter user littlejohn grant admin role;
+------
+connect security4.fdb user SYSDBA password root;
+
+
+---------------------------------------------------------------------------
+
+https://blog.csdn.net/aYeuh/article/details/120910978
+
+https://blog.csdn.net/cxws110/article/details/103755512?utm_medium=distribute.pc_relevant.none-task-blog-2~default~baidujs_baidulandingword~default-0-103755512-blog-120910978.235^v38^pc_relevant_anti_vip&spm=1001.2101.3001.4242.1&utm_relevant_index=1
+
+https://www.cnblogs.com/lyin/p/3618062.html
+
+
+数据库用户管理 gsec.exe
+gsec -user sysdba -password root
+
+添加新用户：
+add root -pw root
+
+
+---------------------------------------------------------------------------
+
+操作数据库：isql.exe
+isql -user sysdba -password root
+
+
+---------------------------------------------------------------------------
+connect localhost:employee user sysdba password root;
+
+alter user sysdba set password 'xxxxx新密码';
+
+
+
+
+
