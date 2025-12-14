@@ -1,0 +1,86 @@
+
+
+Windows Registry Editor Version 5.00
+
+[HKEY_CLASSES_ROOT\DesktopBackground\shell\ShutdownScreen]
+@=""
+"Icon"="C:\\Windows\\system32\\imageres.dll,143"
+"MUIVerb"="关闭屏幕"
+"Position"="bottom"
+
+[HKEY_CLASSES_ROOT\DesktopBackground\shell\ShutdownScreen\Command]
+@="powershell.exe -Command \"(Add-Type '[DllImport(\\\"user32.dll\\\")]public static extern int SendMessage(int hWnd,int hMsg,int wParam,int lParam);' -Name a -Pas)::SendMessage(-1,0x0112,0xF170,2)"
+
+
+
+
+
+----------------------------------------------
+
+Windows Registry Editor Version 5.00
+
+[HKEY_CLASSES_ROOT\DesktopBackground\shell\ShutdownZOptions]
+"MUIVerb"="关机选项"
+"Icon"="shell32.dll,-28"
+"SubCommands"=""
+"Position"="bottom"
+
+[HKEY_CLASSES_ROOT\DesktopBackground\shell\ShutdownZOptions\Shell]
+
+[HKEY_CLASSES_ROOT\DesktopBackground\shell\ShutdownZOptions\Shell\Item0]
+"MUIVerb"="锁定"
+
+[HKEY_CLASSES_ROOT\DesktopBackground\shell\ShutdownZOptions\Shell\Item0\Command]
+@="rundll32 user32.dll,LockWorkStation"
+
+[HKEY_CLASSES_ROOT\DesktopBackground\shell\ShutdownZOptions\Shell\Item1]
+"MUIVerb"="注销"
+
+[HKEY_CLASSES_ROOT\DesktopBackground\shell\ShutdownZOptions\Shell\Item1\Command]
+@="shutdown -l"
+
+[HKEY_CLASSES_ROOT\DesktopBackground\shell\ShutdownZOptions\Shell\Item2]
+"MUIVerb"="切换账户"
+
+[HKEY_CLASSES_ROOT\DesktopBackground\shell\ShutdownZOptions\Shell\Item2\Command]
+@="tsdiscon"
+
+[HKEY_CLASSES_ROOT\DesktopBackground\shell\ShutdownZOptions\Shell\Item3]
+"MUIVerb"="睡眠"
+
+[HKEY_CLASSES_ROOT\DesktopBackground\shell\ShutdownZOptions\Shell\Item3\Command]
+@="rundll32 powrprof.dll,SetSuspendState Sleep"
+
+[HKEY_CLASSES_ROOT\DesktopBackground\shell\ShutdownZOptions\Shell\Item4]
+"MUIVerb"="休眠"
+
+[HKEY_CLASSES_ROOT\DesktopBackground\shell\ShutdownZOptions\Shell\Item4\Command]
+@="shutdown -h"
+
+[HKEY_CLASSES_ROOT\DesktopBackground\shell\ShutdownZOptions\Shell\Item5]
+"MUIVerb"="重启"
+
+[HKEY_CLASSES_ROOT\DesktopBackground\shell\ShutdownZOptions\Shell\Item5\Command]
+@="shutdown -r -f -t 00"
+
+[HKEY_CLASSES_ROOT\DesktopBackground\shell\ShutdownZOptions\Shell\Item6]
+"MUIVerb"="关机"
+
+[HKEY_CLASSES_ROOT\DesktopBackground\shell\ShutdownZOptions\Shell\Item6\Command]
+@="shutdown -s -f -t 00"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
