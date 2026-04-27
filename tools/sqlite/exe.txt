@@ -1,0 +1,179 @@
+using System;
+using System.Diagnostics;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+
+namespace CrsServerControl
+{
+    public partial class Form1 : Form
+    {
+        private Process _crsProcess;
+        private readonly object _processLock = new object();
+
+        public Form1()
+        {
+            InitializeComponent();
+            btnStart.Text = "Start";
+            btnStop.Enabled = false;
+            richTextBoxConsole.ReadOnly = true;
+        }
+
+        private async void btnStart_Click(object sender, EventArgs e)
+        {
+            if (btnStart.Text == "Start")
+            {
+                await StartProcessAsync();
+            }
+            else
+            {
+                await RestartProcessAsync();
+            }
+        }
+
+        private async void btnStop_Click(object sender, EventArgs e)
+        {
+            await StopProcessAsync();
+        }
+
+        private async Task StartProcessAsync()
+        {
+            await Task.Run(() =>
+            {
+                lock (_processLock)
+                {
+                    if (_crsProcess != null && !_crsProcess.HasExited)
+                    {
+                        return;
+                    }
+
+                    try
+                    {
+                        var startInfo = new ProcessStartInfo
+                        {
+                            FileName = "crs.exe",
+                            WorkingDirectory = AppDomain.CurrentDomain.BaseDirectory,
+                            UseShellExecute = false,
+                            RedirectStandardOutput = true,
+                            RedirectStandardError = true,
+                            CreateNoWindow = true,
+                            StandardOutputEncoding = Encoding.UTF8,
+                            StandardErrorEncoding = Encoding.UTF8
+                        };
+
+                        _crsProcess = new Process { StartInfo = startInfo };
+                        _crsProcess.EnableRaisingEvents = true;
+                        _crsProcess.OutputDataReceived += Process_OutputDataReceived;
+                        _crsProcess.ErrorDataReceived += Process_OutputDataReceived;
+                        _crsProcess.Exited += Process_Exited;
+
+                        _crsProcess.Start();
+                        _crsProcess.BeginOutputReadLine();
+                        _crsProcess.BeginErrorReadLine();
+
+                        AppendText($"【系统】已启动 CRS 服务器 PID：{_crsProcess.Id}\r\n");
+
+                        Invoke((Action)(() =>
+                        {
+                            btnStart.Text = "ReStart";
+                            btnStop.Enabled = true;
+                        }));
+                    }
+                    catch (Exception ex)
+                    {
+                        AppendText($"【错误】启动失败：{ex.Message}\r\n");
+                    }
+                }
+            });
+        }
+
+        private async Task RestartProcessAsync()
+        {
+            await StopProcessAsync();
+            await Task.Delay(500);
+            await StartProcessAsync();
+        }
+
+        private async Task StopProcessAsync()
+        {
+            await Task.Run(() =>
+            {
+                lock (_processLock)
+                {
+                    try
+                    {
+                        if (_crsProcess == null || _crsProcess.HasExited)
+                            return;
+
+                        AppendText("【系统】正在停止服务器...\r\n");
+
+                        if (!_crsProcess.CloseMainWindow())
+                        {
+                            _crsProcess.Kill();
+                        }
+
+                        if (!_crsProcess.WaitForExit(2000))
+                        {
+                            _crsProcess.Kill();
+                            _crsProcess.WaitForExit();
+                        }
+
+                        _crsProcess.Close();
+                        _crsProcess.Dispose();
+                        _crsProcess = null;
+
+                        AppendText("【系统】服务器已停止\r\n");
+                    }
+                    catch (Exception ex)
+                    {
+                        AppendText($"【错误】停止失败：{ex.Message}\r\n");
+                    }
+                    finally
+                    {
+                        Invoke((Action)(() =>
+                        {
+                            btnStart.Text = "Start";
+                            btnStop.Enabled = false;
+                        }));
+                    }
+                }
+            });
+        }
+
+        private void Process_Exited(object sender, EventArgs e)
+        {
+            AppendText("【系统】CRS 进程已退出\r\n");
+
+            Invoke((Action)(() =>
+            {
+                btnStart.Text = "Start";
+                btnStop.Enabled = false;
+            }));
+        }
+
+        private void Process_OutputDataReceived(object sender, DataReceivedEventArgs e)
+        {
+            if (!string.IsNullOrEmpty(e.Data))
+                AppendText(e.Data + "\r\n");
+        }
+
+        private void AppendText(string text)
+        {
+            if (richTextBoxConsole.InvokeRequired)
+            {
+                richTextBoxConsole.Invoke(new Action<string>(AppendText), text);
+                return;
+            }
+
+            richTextBoxConsole.AppendText(text);
+            richTextBoxConsole.SelectionStart = richTextBoxConsole.TextLength;
+            richTextBoxConsole.ScrollToCaret();
+        }
+
+        protected override async void OnFormClosing(FormClosingEventArgs e)
+        {
+            base.OnFormClosing(e);
+            await StopProcessAsync();
+        }
+    }
+}
